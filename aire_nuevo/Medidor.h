@@ -30,6 +30,7 @@ public:
   void scrollAireNuevo();
   void calibrar();
   void rgb(char color);
+  void sonarAlarma(int duracionNota);
   void alarma(int veces, int duracionNota, char color);
   void alarmaCO2(int veces, int duracionNota);
   void iniciar();

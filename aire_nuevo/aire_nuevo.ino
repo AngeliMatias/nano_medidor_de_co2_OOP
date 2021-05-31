@@ -11,9 +11,10 @@ void setup() {
 
 void loop() {
   medidor.verificarEstadoPulsador();
-  if(++loops % 30 == 0) {
+  if(loops % 30 == 0) {
     medidor.presentarMedidor();
     loops = 0;
   } 
   medidor.sensarCO2();
+  loops++;
 }

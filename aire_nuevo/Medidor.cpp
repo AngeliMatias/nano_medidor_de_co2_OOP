@@ -154,9 +154,9 @@ void Medidor::logoUNAHUR() {
 void Medidor::scrollingText(uint8_t scrolled_by) {
   for (uint8_t i=0;i<11;i++) {
     display.setCursor(i,0);
-    if (scrolled_by>=11) scrolled_by=0;                                 // Si el indice es mayor que el array de caracteres y ya imprimió el espacio vacío, vuelve al inicio
-    if (scrolled_by<10) display.print(str_to_print[scrolled_by]);       // Si el indice está dentro del array de caracteres, imprime el caracter
-    else display.print(' ');                                            // Si el indice es mayor que el array de caracteres, imprime un espacio vacio para que el mensaje no se vea como "Aire NuevoAire Nuevo"
+    if (scrolled_by>=11) scrolled_by=0;   
+    if (scrolled_by<10) display.print(str_to_print[scrolled_by]);      
+    else display.print(' ');                       
     scrolled_by++;
   }
 }
@@ -170,58 +170,48 @@ void Medidor::scrollAireNuevo() {
 
 void Medidor::calibrar()
 {
-  const long segundosEspera = 1800;         // Cantidad de segundos a esperar, son 30 minutos pero en segundos para mayor comodidad
-  long segundosPasados = 0;                 // Cuenta segundos pasados
+  const long segundosEspera = 1800;        
+  long segundosPasados = 0;                 
   // Print por serial
-  Serial.print("COMIENZA CALIBRACION \n");  // Notificamos que empezó el proceso de calibración
+  Serial.print("COMIENZA CALIBRACION \n");  
   // Print por display
-  display.clear();                          // Limpiamos pantalla e imprimimos el mensaje por display
+  display.clear();                       
   displayPrint(0, 0, "COMIENZA");
   displayPrint(0, 1, "CALIBRACION");
-  delay(10000);                             // Espera 10 segundos
+  delay(10000);                             
  
-  while(segundosPasados <= segundosEspera) {                      // Espera media hora
-    if (++segundosPasados % 60 == 0) {                            // Si los segundos pasados son múltiplo de 60
-    // Print por serial                                           // Imprimimos por serial para no llegar el monitor de mensajes innecesarios
+  while(segundosPasados <= segundosEspera) {                      
+    if (++segundosPasados % 60 == 0) {                                                                
       Serial.print(String(segundosPasados / 60) + " minutos \n");  
     }
-    // Print por pantalla
-    display.clear();                                              // Borra pantalla  
-    displayPrint(0, 0, "CALIBRANDO");                             // Notificamos que se sigue calibrando
-    displayPrint(0, 1, String(segundosPasados / 60) + " minutos");// Escribimos los minutos pasados
-    delay(1000); // Espera 1 segundo
+    display.clear();                                             
+    displayPrint(0, 0, "CALIBRANDO");                  
+    displayPrint(0, 1, String(segundosPasados / 60) + " minutos");
+    delay(1000);
     }
-  sensor.calibrateZero();                     // Ejecuta la primer calibración
-  // Print por serial
-  Serial.print("PRIMERA CALIBRACION \n");     // Avisamos por serial que ya se ejecuto la primer calibración
-  // Print por display
-  display.clear();                            // Limpio pantalla
-  displayPrint(0, 0, "PRIMERA");              // Avisamos por display que ya se ejecutó la primer calibración
+  sensor.calibrateZero();                   
+  Serial.print("PRIMERA CALIBRACION \n");   
+  display.clear();                          
+  displayPrint(0, 0, "PRIMERA");             
   displayPrint(0, 1, "CALIBRACION");     
-  alarma(1, 250, 'b');                        // Avisamos que terminó la primera calibración y mantenemos el led en azul
-  delay(60000);                               // Espera 1 minuto
-  sensor.calibrateZero();                     // Calibra por segunda vez por las dudas
-  // Print por serial
+  alarma(1, 250, 'b');                        
+  delay(60000);                               
+  sensor.calibrateZero();                    
   Serial.print("SEGUNDA CALIBRACION \n");
-  // Print por display
-  display.clear();                            // Limpio pantalla     
+  display.clear();                            
   displayPrint(0, 0, "SEGUNDA");        
   displayPrint(0, 1, "CALIBRACION");    
-  alarma(1, 250, 'b');                        // Avisamos que terminó la segunda calibración y mantenemos el led en azul
-  delay(10000); // Espera 10 segundos
-  // Print por serial
+  alarma(1, 250, 'b');                     
+  delay(10000);
   Serial.print("CALIBRACION TERMINADA \n");
-  // Print por display
-  display.clear();                            // Borra pantalla  
+  display.clear();                         
   displayPrint(0, 0, "CALIBRACION");       
   displayPrint(0, 1, "TERMINADA");    
-  alarma(5, 250, 'g');                        // Avisamos que finalizó el proceso de calibración entero y ponemos el led en verde para mostrar que vuelve a su funcionamiento normal
-  delay(10000); // Espera 10 segundos 
+  alarma(5, 250, 'g');                      
+  delay(10000);
 }
 
 void Medidor::rgb(char color) {
-  // Switch funciona solo con int o char
-  // Como el led es anodo comun, pasamos los valos de manera inversa
   switch (color) {
     case 'r': //red
       digitalWrite(ledR_pin, LOW);
@@ -252,31 +242,26 @@ void Medidor::rgb(char color) {
 }
 
 void Medidor::alarma(int veces, int duracionNota, char color) {
-  rgb(color);                                 // Pongo el rgb en el color deseado
+  rgb(color);                                 
   for(int i=0; i<veces; i++) {
-    tone(buzzer_pin, NOTE_C7, duracionNota);   // Hago sonar el buzzer, la nota c7 es la que más fuerte suena
-    delay(duracionNota);                      // Espero lo que dura la nota
-    noTone(buzzer_pin);                        // Silencio el buzzer
-    delay(duracionNota);                      // Delay entre alarmas
+    sonarAlarma(duracionNota); 
+    delay(duracionNota);
   }
 }
 
 void Medidor::alarmaCO2(int veces, int duracionNota) {
   for(int i=0; i<veces; i++) {
-    if(i<veces-1 or veces==1) {
-      rgb('r');                                 // Prendo el led
-      tone(buzzer_pin, NOTE_C7, duracionNota);   // Hago sonar el buzzer, la nota c7 es la que más fuerte suena
-      delay(duracionNota);                      // Espero lo que dura la nota
-      noTone(buzzer_pin);                        // Silencio el buzzer
-      rgb('a');                                 // Apago el led
-      delay(duracionNota);                      // Delay entre alarmas
+    rgb('r');                                   
+    sonarAlarma(duracionNota); 
+    if(i<veces-1 or veces==1) {                 
+      rgb('a');                                                  
     }
-    else {
-      rgb('r');
-      tone(buzzer_pin, NOTE_C7, duracionNota);   // Hago sonar el buzzer, la nota c7 es la que más fuerte suena
-      delay(duracionNota);                      // Espero lo que dura la nota
-      noTone(buzzer_pin);                        // Silencio el buzzer
-      delay(duracionNota);                      // Delay entre alarmas
-    }
+    delay(duracionNota); 
   }
+}
+
+void Medidor::sonarAlarma(int duracionNota) {
+  tone(buzzer_pin, NOTE_C7, duracionNota);   
+  delay(duracionNota);
+  noTone(buzzer_pin);
 }

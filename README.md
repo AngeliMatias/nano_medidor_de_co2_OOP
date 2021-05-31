@@ -1,5 +1,5 @@
-﻿# Medidor de CO2 V3 - Arduino Nano
-Esta es la tercer versión del medidor de CO2 con una placa Arduino Nano utilizando un display I2C, un sensor MH-Z19C, un led RGB y un buzzer.
+﻿# Medidor de CO2 V3.2 - Arduino Nano usando OOP
+Esta es la versión 3.2 del medidor de CO2 con una placa Arduino Nano utilizando un display I2C, un sensor MH-Z19C, un led RGB y un buzzer. En esta versión se implementó el paradigma de programación orientada a objetos para el modelado del medidor.
 
 ### Pinout de la Arduino Nano
 ![Arduino Nano Pinout](nano-pinout.png)

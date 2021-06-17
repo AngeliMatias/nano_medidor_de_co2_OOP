@@ -13,7 +13,7 @@ Medidor::Medidor(void) {
   ledB_pin = 2;
   buzzer_pin = 7;
   pulsador_pin = 8;
-  numero_de_serie = "0000";
+  numero_de_serie = "0226";
 }
 
 void Medidor::iniciar() {
